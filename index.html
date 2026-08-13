@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Educational quizzes</title>
+<meta name="description" content="Educational quizzes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#EAECF2;
+    --paper:#0D1020;
+    --card:#161B30;
+    --muted:#8E97B2;
+    --rule:#272E4A;
+    --accent:#E86BA8;
+    --ochre:#D9A24B;
+    --serif:"STIX Two Text",Georgia,serif;
+    --sans:"IBM Plex Sans",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+
+  *{box-sizing:border-box}
+
+  html{-webkit-text-size-adjust:100%}
+
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:17px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  /* ---------- masthead ---------- */
+
+
+  /* ---------- hero ---------- */
+
+  .hero{padding:64px 0 56px}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin:0 0 28px;
+  }
+
+  .series{
+    font-family:var(--serif);
+    font-weight:600;
+    letter-spacing:-.02em;
+    font-size:clamp(38px,10vw,64px);
+    line-height:1.25;
+    letter-spacing:-.01em;
+    margin:0;
+    white-space:nowrap;
+    overflow-x:auto;
+    overflow-y:hidden;
+    padding-bottom:6px;
+    scrollbar-width:none;
+  }
+  .series::-webkit-scrollbar{display:none}
+
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .lede{
+    font-family:var(--sans);
+    font-size:18px;
+    line-height:1.55;
+    color:var(--ink);
+    margin:34px 0 0;
+    max-width:52ch;
+  }
+  .lede em{color:var(--muted);font-style:italic}
+
+  /* ---------- apps ---------- */
+
+  .apps{padding-bottom:72px}
+
+  .section-label.later{margin-top:52px}
+
+  .section-label{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding-bottom:12px;
+    border-bottom:1px solid var(--rule);
+    margin:0 0 6px;
+  }
+
+  .app{
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:20px 22px;
+    margin-top:12px;
+    transition:border-color .18s ease, transform .18s ease;
+  }
+  .app:hover,.app:focus-visible{
+    border-color:var(--accent);
+    transform:translateY(-2px);
+  }
+  .app:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  .app-kicker{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ochre);
+  }
+
+  .app-title{
+    font-family:var(--serif);
+    font-size:25px;
+    font-weight:600;
+    line-height:1.2;
+    margin:7px 0 6px;
+  }
+
+  .app-note{
+    margin:0;
+    font-size:15.5px;
+    color:var(--muted);
+  }
+
+  .app-open{
+    display:inline-block;
+    margin-top:12px;
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.06em;
+    color:var(--accent);
+  }
+
+  /* ---------- footer ---------- */
+
+  footer{
+    border-top:1px solid var(--rule);
+    padding:26px 0 46px;
+    font-size:14.5px;
+    color:var(--muted);
+  }
+  footer p{margin:0 0 5px}
+  footer a{color:var(--muted)}
+
+  @media (prefers-reduced-motion:reduce){
+    .app{transition:none}
+    .app:hover{transform:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+
+  <header class="hero">
+    <h1 class="series">Educational quizzes</h1>
+  </header>
+
+  <main class="apps">
+    <p class="section-label">Schule</p>
+
+    <a class="app" href="unterwegs.html">
+      <span class="app-kicker">Deutsch &middot; 4./5. Klasse</span>
+      <h2 class="app-title">Unterwegs</h2>
+      <p class="app-note">Mathe und Deutsch f&uuml;r die 4. und 5. Klasse.</p>
+      <span class="app-open">&Ouml;ffnen &rarr;</span>
+    </a>
+
+    <a class="app" href="nostos.html">
+      <span class="app-kicker">&Epsilon;&lambda;&lambda;&eta;&nu;&iota;&kappa;&#940;</span>
+      <h2 class="app-title">&Nu;&#972;&sigma;&tau;&omicron;&sigmaf;</h2>
+      <p class="app-note">&#913;&pi;&#972; &tau;&eta;&nu; &Gamma;&#697; &Gamma;&upsilon;&mu;&nu;&alpha;&sigma;&#943;&omicron;&upsilon; &sigma;&tau;&eta;&nu; &Alpha;&#697; &Lambda;&upsilon;&kappa;&epsilon;&#943;&omicron;&upsilon;.</p>
+      <span class="app-open">&#902;&nu;&omicron;&iota;&gamma;&mu;&alpha; &rarr;</span>
+    </a>
+
+    <a class="app" href="sidereus.html">
+      <span class="app-kicker">Italiano</span>
+      <h2 class="app-title">Sidereus</h2>
+      <p class="app-note">Informatica, chimica e fisica.</p>
+      <span class="app-open">Apri &rarr;</span>
+    </a>
+
+    <a class="app" href="ansatz.html">
+      <span class="app-kicker">Deutsch &middot; Matur</span>
+      <h2 class="app-title">Ansatz</h2>
+      <p class="app-note">Physik f&uuml;r die Maturit&auml;tspr&uuml;fung.</p>
+      <span class="app-open">&Ouml;ffnen &rarr;</span>
+    </a>
+
+    <p class="section-label later">Unterwegs gewesen</p>
+
+    <a class="app" href="meltemi.html">
+      <span class="app-kicker">Greece</span>
+      <h2 class="app-title">Meltemi</h2>
+      <p class="app-note">Athens, Crete, Chalkida and Sounion &mdash; named for the summer wind.</p>
+      <span class="app-open">Open &rarr;</span>
+    </a>
+
+    <a class="app" href="haar.html">
+      <span class="app-kicker">London &amp; Edinburgh</span>
+      <h2 class="app-title">Haar</h2>
+      <p class="app-note">Museums, the meridian and the Royal Mile &mdash; named for the North Sea fog.</p>
+      <span class="app-open">Open &rarr;</span>
+    </a>
+
+    <a class="app" href="ancientspirit.html">
+      <span class="app-kicker">Wine</span>
+      <h2 class="app-title">Ancient Spirit</h2>
+      <p class="app-note">Greek grapes, regions and the long history of the vine.</p>
+      <span class="app-open">Open &rarr;</span>
+    </a>
+
+  </main>
+
+  <footer>
+    <p>Free to use. Nothing is stored or sent anywhere.</p>
+  </footer>
+
+</div>
+
+</body>
+</html>
