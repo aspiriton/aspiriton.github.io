@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kogarashi — Tokyo &amp; Kyoto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --kon:#0E1428;
+    --kon-2:#18203C;
+    --card:#1C2445;
+    --washi:#EFEAE0;
+    --muted:#9AA3C0;
+    --rule:#2C3663;
+    --shu:#E2523B;
+    --matcha:#8FA860;
+    --kin:#D9A94B;
+    --mincho:"Zen Old Mincho",Georgia,serif;
+    --gothic:"Zen Kaku Gothic New",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--kon);color:var(--washi);
+    font-family:var(--gothic);font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px 56px}
+  button{font:inherit;color:inherit;cursor:pointer}
+
+  .top{display:flex;align-items:baseline;justify-content:space-between;padding:22px 0 0}
+  .brand{font-family:var(--mincho);font-size:19px;font-weight:600;letter-spacing:.02em}
+  .brand span{color:var(--shu)}
+  .top-right{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  h1{font-family:var(--mincho);font-weight:700;font-size:clamp(32px,8.5vw,48px);line-height:1.15;margin:34px 0 10px;overflow-wrap:break-word}
+  .sub{color:var(--muted);margin:0 0 30px;max-width:44ch}
+
+  .label{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:30px 0 12px}
+
+  .grid{display:grid;gap:10px}
+  .opt{
+    display:block;width:100%;text-align:left;
+    background:var(--card);border:1px solid var(--rule);border-radius:6px;
+    padding:15px 16px;transition:border-color .15s,background .15s;
+  }
+  .opt:hover{border-color:var(--shu)}
+  .opt b{display:block;font-family:var(--mincho);font-size:19px;font-weight:600}
+  .opt small{display:block;color:var(--muted);font-size:14px;margin-top:3px}
+  .opt .jp{color:var(--kin);font-size:14px;font-family:var(--mincho)}
+
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:transparent;border:1px solid var(--rule);border-radius:99px;padding:7px 14px;font-size:14px;color:var(--muted)}
+  .chip[aria-pressed="true"]{border-color:var(--shu);color:var(--washi);background:var(--kon-2)}
+
+  .go{
+    width:100%;margin-top:26px;background:var(--shu);border:0;border-radius:6px;
+    padding:16px;font-size:17px;font-weight:700;color:#fff;letter-spacing:.02em;
+  }
+  .go:disabled{opacity:.4}
+
+  .bar{height:3px;background:var(--rule);border-radius:2px;margin:20px 0 4px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--shu);transition:width .3s}
+  .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  .kat{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--kin);margin:22px 0 8px}
+  .q{font-family:var(--mincho);font-size:clamp(21px,5.4vw,27px);line-height:1.35;font-weight:600;margin:0 0 22px}
+
+  .ans{
+    display:block;width:100%;text-align:left;background:var(--card);
+    border:1px solid var(--rule);border-radius:6px;padding:14px 16px;
+    transition:border-color .15s,background .15s;
+  }
+  .ans:hover:not(:disabled){border-color:var(--shu)}
+  .ans:disabled{cursor:default}
+  .ans.right{border-color:var(--matcha);background:rgba(143,168,96,.14)}
+  .ans.wrong{border-color:var(--shu);background:rgba(226,82,59,.13)}
+
+  .aside{
+    margin-top:22px;border-left:2px solid var(--kin);padding:2px 0 2px 15px;
+    color:var(--muted);font-size:15.5px;
+  }
+  .aside b{color:var(--washi);font-family:var(--mincho);display:block;margin-bottom:3px;font-size:14px;letter-spacing:.04em}
+
+  .score{font-family:var(--mincho);font-size:clamp(44px,14vw,76px);font-weight:700;margin:12px 0 0;line-height:1}
+  .verdict{font-family:var(--mincho);font-size:22px;margin:14px 0 8px}
+
+  .ghost{background:transparent;border:1px solid var(--rule);border-radius:6px;padding:14px;width:100%;margin-top:10px;color:var(--muted)}
+
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--rule);font-size:13.5px;color:var(--muted)}
+  .foot a{color:var(--muted)}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">木枯らし <span>Kogarashi</span></div>
+    <div class="top-right" id="tally"></div>
+  </div>
+  <div id="app"></div>
+  <div class="foot">Free to use. Progress is kept in this browser only.</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- storage ---------- */
+var KEY="kogarashi:v1", ok=true;
+try{window.localStorage.setItem("__t","1");window.localStorage.removeItem("__t");}catch(e){ok=false;}
+var mem={};
+function load(){try{return JSON.parse(ok?(localStorage.getItem(KEY)||"{}"):(mem[KEY]||"{}"));}catch(e){return {};}}
+function save(o){var s=JSON.stringify(o);try{ok?localStorage.setItem(KEY,s):(mem[KEY]=s);}catch(e){mem[KEY]=s;}}
+var stats=load();
+if(!stats.rounds){stats.rounds=0;stats.best=0;stats.seen={};}
+
+/* ---------- data ---------- */
+function h(ort,kat,stufe,frage,richtig,falsch,uebrigens){
+  return {ort:ort,kat:kat,stufe:stufe,frage:frage,richtig:richtig,falsch:falsch,uebrigens:uebrigens};
+}
+
+var ORTE=[
+  {id:"tokyo", name:"Tokyo",  jp:"東京",   unter:"Asakusa, Shibuya, Ueno, the bay"},
+  {id:"kyoto", name:"Kyoto",  jp:"京都",   unter:"Temples, gardens, Gion, Arashiyama"},
+  {id:"nara",  name:"Nara",   jp:"奈良",   unter:"The Great Buddha and the deer"},
+  {id:"japan", name:"Japan",  jp:"日本",   unter:"Trains, food, manners, seasons"}
+];
+
+var KATS={
+  rekishi:{name:"History & Legend"},
+  tempel :{name:"Temples & Gardens"},
+  essen  :{name:"Food & Drink"},
+  zahlen :{name:"Numbers & Records"},
+  kotoba :{name:"Words & Phrases"}
+};
+
+var QS=[
+
+/* ===== TOKYO — history & legend ===== */
+h("tokyo","rekishi",1,"What was Tokyo called before 1868?","Edo",["Kanto","Nara","Osaka"],
+ "Edo means 'estuary'. When the emperor moved there from Kyoto, the city was renamed Tokyo — 'eastern capital'."),
+h("tokyo","rekishi",1,"Tokyo is the capital of Japan. Which city was the capital before it?","Kyoto",["Osaka","Nara","Kobe"],
+ "Kyoto held the title for over a thousand years. Its old name, Heian-kyo, meant 'capital of peace and tranquillity'."),
+h("tokyo","rekishi",1,"Who lives in the palace at the centre of Tokyo?","the Emperor of Japan",["the Prime Minister","nobody, it is a museum","the mayor of Tokyo"],
+ "The Imperial Palace sits on the grounds of Edo Castle. Most of it is closed, but the East Gardens are open and free."),
+h("tokyo","rekishi",2,"Sensoji temple in Asakusa was founded after two brothers found something in the river. What?","a small golden statue of Kannon",["a sword","a bell","a stone tablet"],
+ "The story is set in the year 628, which makes Sensoji the oldest temple in Tokyo. The statue itself has never been shown to the public."),
+h("tokyo","rekishi",2,"What is the huge red paper lantern at the entrance to Sensoji called?","Kaminarimon, the Thunder Gate",["Torii","Daibutsu","Shoji"],
+ "Two guardian gods stand beside it: Raijin for thunder, Fujin for wind. The lantern is folded flat when a typhoon is coming."),
+h("tokyo","rekishi",2,"The 1964 Olympics changed Tokyo. What form of transport opened for them?","the first Shinkansen line",["the subway","trams","the monorail to the airport"],
+ "The Tokaido Shinkansen opened nine days before the games. It still runs the same route to Kyoto and Osaka."),
+h("tokyo","rekishi",3,"Meiji Jingu shrine is surrounded by a forest. Where did the forest come from?","it was planted by volunteers about a century ago",["it is the last piece of ancient woodland in Tokyo","it was a private garden of the shogun","it grew back by itself after a fire"],
+ "Around 100,000 trees were donated from across Japan and planted by volunteers in the 1920s. It was designed to look wild within a few generations."),
+
+/* ===== TOKYO — temples, gardens, sights ===== */
+h("tokyo","tempel",1,"Shibuya is famous for a crossing. What happens there?","people cross from all directions at once",["cars drive on a bridge over the sea","trains cross above the street","boats pass under a bridge"],
+ "It is one of the busiest crossings in the world. The best view is from the windows of the buildings around it — and it is free."),
+h("tokyo","tempel",1,"A famous statue of a dog stands outside Shibuya station. What was his name?","Hachiko",["Shiro","Taro","Kuma"],
+ "Hachiko waited at the station for his owner every day for years after the man died. The statue is a favourite meeting point."),
+h("tokyo","tempel",1,"Which tall tower in Tokyo is painted orange and white and looks like the Eiffel Tower?","Tokyo Tower",["Tokyo Skytree","Mori Tower","Sunshine 60"],
+ "It was finished in 1958 and is a broadcasting tower. Skytree, the taller one, came much later."),
+h("tokyo","tempel",2,"What sort of shrine is Meiji Jingu?","a Shinto shrine",["a Buddhist temple","a Christian church","a Confucian hall"],
+ "A quick rule of thumb: if there is a torii gate at the entrance, it is Shinto. If there is a large incense burner and statues, it is usually Buddhist."),
+h("tokyo","tempel",2,"At the entrance to a Shinto shrine there is a water basin. What is it for?","rinsing your hands and mouth before entering",["drinking",'washing coins',"feeding the fish"],
+ "Use the ladle for your left hand, then your right, then pour a little into your cupped hand for your mouth. Never drink straight from the ladle."),
+h("tokyo","tempel",2,"Ueno Park is known for one thing above all in spring. What?","cherry blossom",["autumn leaves","tulips","snow sculptures"],
+ "Sitting under the blossom with food and friends is called hanami — 'flower viewing'. Ueno gets extremely crowded for it."),
+h("tokyo","tempel",3,"Akihabara is a district known for what?","electronics, games and anime",["fish markets","temples","government offices"],
+ "It grew out of a post-war radio parts market. The nickname 'Akiba' is what locals actually use."),
+
+/* ===== TOKYO — food ===== */
+h("tokyo","essen",1,"The old Tsukiji fish market moved in 2018. Where did the inner market go?","Toyosu",["Odaiba","Ueno","Yokohama"],
+ "The outer market at Tsukiji stayed put and still sells food to the public. Toyosu is where the tuna auction happens now."),
+h("tokyo","essen",1,"What is the fish in sushi usually served on?","vinegared rice",["plain boiled rice","bread","noodles"],
+ "The word sushi actually refers to the seasoned rice, not the fish. Raw fish on its own is sashimi."),
+h("tokyo","essen",2,"What is tempura?","seafood and vegetables in a light fried batter",["grilled skewers","a noodle soup","raw fish"],
+ "Portuguese missionaries brought the frying technique in the 1500s. Japan kept it and made the batter far lighter."),
+h("tokyo","essen",2,"What are yakitori?","grilled chicken skewers",["fried noodles","rice balls","sweet pancakes"],
+ "Yaki means grilled, tori means bird. They are a standard order in the small bars under railway arches."),
+h("tokyo","essen",2,"Many ramen shops in Tokyo make you do something before you sit down. What?","buy a ticket from a vending machine",["take off your shoes","book by phone","pay a cover charge"],
+ "You press the button for your bowl, take the ticket, and hand it over at the counter. It keeps the queue moving and needs no Japanese."),
+h("tokyo","essen",3,"What is a konbini?","a convenience store",["a covered market","a food festival","a lunchbox"],
+ "7-Eleven, Lawson and FamilyMart are everywhere and genuinely good. Egg sandwiches and onigiri from a konbini are a real Japanese breakfast."),
+
+/* ===== TOKYO — numbers ===== */
+h("tokyo","zahlen",1,"Roughly how many people live in the Greater Tokyo area?","about 37 million",["about 5 million","about 12 million","about 80 million"],
+ "It is the largest metropolitan area in the world. Greater Zurich would fit inside it around twenty times over."),
+h("tokyo","zahlen",2,"How tall is Tokyo Skytree?","634 metres",["333 metres","1,010 metres","220 metres"],
+ "The number was chosen as a pun: 6-3-4 can be read mu-sa-shi, the old name of the region."),
+h("tokyo","zahlen",2,"Shinjuku station holds a world record. For what?","the busiest railway station in the world",["the deepest station","the oldest station","the longest platform"],
+ "Well over three million people pass through daily across all its lines. It has more than 200 exits, so agree on a meeting point."),
+h("tokyo","zahlen",3,"How punctual are Shinkansen trains on average?","late by well under a minute",["late by about ten minutes","late by about half an hour","they have no timetable"],
+ "Average delays are measured in seconds, including weather. If a train is five minutes late you can be given a certificate to prove it."),
+
+/* ===== KYOTO — history ===== */
+h("kyoto","rekishi",1,"For how long was Kyoto the capital of Japan?","more than a thousand years",["about fifty years","about two hundred years","it never was"],
+ "From 794 until 1868. That is why so much survives there — and why Tokyo has comparatively little that is old."),
+h("kyoto","rekishi",1,"Kyoto was largely spared in the Second World War. What does that mean for visitors today?","many old wooden buildings survive",["the city is entirely modern","nothing at all remains","the city was rebuilt from scratch"],
+ "Tokyo, Osaka and Nagoya lost most of their old wooden districts. Kyoto is where you go to see what was there before."),
+h("kyoto","rekishi",2,"What is a geiko?","a performer trained in dance, music and conversation",["a Buddhist nun","a tea farmer","a sword maker"],
+ "Geiko is the Kyoto word; geisha is the more general one. An apprentice is a maiko, and her longer sleeves and hair ornaments give her away."),
+h("kyoto","rekishi",2,"Nijo Castle has a famous floor. What does it do?","it squeaks when you walk on it",["it glows in the dark","it is made of glass","it is heated"],
+ "It is called a nightingale floor. Whether it was a deliberate alarm against intruders or just old joinery is still argued about."),
+h("kyoto","rekishi",3,"Kyoto's streets are unusually easy to navigate. Why?","they were laid out on a grid, copying a Chinese capital",["they follow the rivers","they were designed in the 20th century","they radiate from the palace"],
+ "The model was Chang'an, the Tang dynasty capital. Street names still work like coordinates, which makes addresses readable."),
+
+/* ===== KYOTO — temples & gardens ===== */
+h("kyoto","tempel",1,"Fushimi Inari shrine is famous for thousands of what?","orange torii gates",["stone lanterns","cherry trees","bridges"],
+ "Each gate was paid for by a person or business, whose name is written on the back. The full walk up the mountain takes two to three hours."),
+h("kyoto","tempel",1,"Which animal is the messenger of the god Inari?","the fox",["the deer","the crane","the monkey"],
+ "Stone foxes guard the shrine, often holding a key to the rice granary in their mouths. Inari is the god of rice, and so of prosperity."),
+h("kyoto","tempel",1,"Kinkaku-ji is known in English as what?","the Golden Pavilion",["the Silver Pavilion","the Red Temple","the Water Shrine"],
+ "Its top two floors are covered in real gold leaf. It was burned down by a young monk in 1950 and rebuilt five years later."),
+h("kyoto","tempel",2,"Ginkaku-ji is called the Silver Pavilion. What is odd about that?","it was never covered in silver",["it is made entirely of silver","the silver was stolen","it is silver only in winter"],
+ "The name may have been a nod to its grander golden cousin. The garden, with its raked cone of sand, is the real reason to go."),
+h("kyoto","tempel",2,"Kiyomizu-dera has a large wooden stage. What is remarkable about how it was built?","it was built without nails",["it floats on water","it can be moved","it is made of stone"],
+ "The platform stands on tall pillars joined by joinery alone. The view over Kyoto from it is the classic one."),
+h("kyoto","tempel",2,"Ryoan-ji has Japan's most famous rock garden. What is unusual about the fifteen stones?","you can never see all fifteen at once",["they are all the same size","they float","they are painted white"],
+ "From any spot on the veranda, at least one is hidden. Whether that is a deliberate lesson or a happy accident is left to you."),
+h("kyoto","tempel",2,"Arashiyama is best known for a grove of what?","bamboo",["cherry trees","pines","maples"],
+ "Go early. By mid-morning the path is shoulder to shoulder, and the sound of the bamboo — the actual point — is lost."),
+h("kyoto","tempel",3,"What is a zen dry garden made of?","raked gravel and stones, with little or no water",["water channels and fountains","flower beds","clipped hedges only"],
+ "The style is called karesansui, 'dry mountain water'. Gravel stands in for the sea and stones for islands or mountains."),
+
+/* ===== KYOTO — food ===== */
+h("kyoto","essen",1,"Which green powdered tea is Kyoto especially known for?","matcha",["sencha","oolong","earl grey"],
+ "The Uji district south of Kyoto has grown tea for centuries. Matcha is whisked, not steeped, so you drink the leaf itself."),
+h("kyoto","essen",2,"Nishiki is a long covered street in central Kyoto. What is sold there?","food",["clothes","books","electronics"],
+ "It is nicknamed 'Kyoto's kitchen'. Pickles, tofu, knives and skewers — much of it eaten standing up."),
+h("kyoto","essen",2,"What is kaiseki?","a multi-course meal built around the season",["a hotpot","a fried dish","a type of noodle"],
+ "It grew out of the tea ceremony. Every course reflects the month, down to the leaf placed on the plate."),
+h("kyoto","essen",3,"Kyoto has a strong tradition of shojin ryori. What is it?","Buddhist temple cooking, without meat or fish",["street food","imperial banquet food","food cooked over charcoal"],
+ "It was developed to feed monks. Tofu and yuba, the skin that forms on soy milk, are the mainstays."),
+
+/* ===== KYOTO — numbers ===== */
+h("kyoto","zahlen",2,"Roughly how many torii gates stand at Fushimi Inari?","about ten thousand",["about a hundred","about five hundred","about a million"],
+ "They are still being added. A small one costs a few hundred thousand yen; a large one, several million."),
+h("kyoto","zahlen",2,"How many UNESCO World Heritage sites are there in and around Kyoto?","seventeen",["one","five","forty"],
+ "They are listed together as the Historic Monuments of Ancient Kyoto. Most, but not all, are in the city itself."),
+h("kyoto","zahlen",3,"How long does the Shinkansen take from Tokyo to Kyoto?","a bit over two hours",["about six hours","about twenty minutes","about ten hours"],
+ "The fastest Nozomi services do it in around 2h15. On a clear day, sit on the right for Mount Fuji."),
+
+/* ===== NARA ===== */
+h("nara","rekishi",1,"Which animal roams freely in Nara Park?","deer",["monkeys","goats","cats"],
+ "There are well over a thousand. They were once considered messengers of the gods, which is why they were never driven out."),
+h("nara","rekishi",2,"What do the deer in Nara sometimes do if you hold a cracker?","bow",["shake hands","sit","roll over"],
+ "They learned it from visitors bowing to them. They will also mug you for the crackers, so keep them out of sight."),
+h("nara","tempel",1,"What is inside Todai-ji temple in Nara?","a giant bronze Buddha",["a golden pavilion","a rock garden","a bamboo grove"],
+ "The Daibutsu is about 15 metres tall. Its hall is one of the largest wooden buildings anywhere."),
+h("nara","zahlen",2,"Nara was Japan's capital before Kyoto. For roughly how long?","about seventy years",["about five hundred years","about a thousand years","about two years"],
+ "The capital moved in 794, partly to get away from the political power the Nara temples had accumulated."),
+
+/* ===== JAPAN GENERAL — manners, trains, language ===== */
+h("japan","rekishi",1,"When you enter a Japanese home, what do you always do?","take off your shoes",["take off your hat","ring a bell","bow three times"],
+ "The same goes for many temples, some restaurants and all tatami rooms. Wear socks you are happy to be seen in."),
+h("japan","rekishi",1,"How do you usually greet someone in Japan?","with a bow",["with a handshake","with a kiss on the cheek","with a wave"],
+ "A small nod is fine for visitors. Nobody expects a foreigner to get the depth and duration right."),
+h("japan","rekishi",1,"What should you not do with chopsticks?","stand them upright in a bowl of rice",["rest them on the bowl","hold them in your right hand","use them for vegetables"],
+ "That is done at funerals, with incense. Passing food chopstick to chopstick is avoided for the same reason."),
+h("japan","rekishi",2,"On Japanese trains and buses, what is the rule about phone calls?","you do not take calls",["you must use speakerphone","calls are allowed only in the front carriage","there is no rule"],
+ "Carriages are remarkably quiet. Phones go on manner mode, and people text instead."),
+h("japan","rekishi",2,"What is an onsen?","a hot spring bath",["a shrine","a garden","a noodle shop"],
+ "You wash thoroughly before getting in — the bath is for soaking, not cleaning. Swimsuits are not worn."),
+h("japan","rekishi",2,"How do you say thank you in Japanese?","arigato",["konnichiwa","sayonara","sumimasen"],
+ "Konnichiwa is hello, sayonara is goodbye, and sumimasen means excuse me or sorry — which you will use constantly."),
+h("japan","rekishi",3,"Japanese writing uses three scripts at once. Which of these is one of them?","hiragana",["hangul","cyrillic","devanagari"],
+ "The three are kanji, hiragana and katakana. Katakana is used for foreign words, so it is the one worth learning first."),
+h("japan","zahlen",1,"What is the currency of Japan?","the yen",["the won","the yuan","the baht"],
+ "Japan is still fond of cash, though cards and IC transport cards now work almost everywhere in the big cities."),
+h("japan","zahlen",1,"Which is the tallest mountain in Japan?","Mount Fuji",["Mount Aso","Mount Hiei","Mount Koya"],
+ "3,776 metres, and an active volcano. On a clear winter morning you can see it from parts of Tokyo."),
+h("japan","zahlen",2,"How many main islands does Japan have?","four",["one","twelve","forty"],
+ "Honshu, Hokkaido, Kyushu and Shikoku. Tokyo, Kyoto and Nara are all on Honshu."),
+h("japan","zahlen",2,"On which side of the road do cars drive in Japan?","the left",["the right","either side","there are no rules"],
+ "Which also means people tend to stand on the left of an escalator — except in Osaka, where they stand on the right."),
+h("japan","zahlen",3,"What do you do with the tip after a meal in Japan?","you do not tip",["leave ten per cent","leave the change","tip the chef directly"],
+ "Tipping can cause genuine confusion and is sometimes refused. Good service is not something you pay extra for."),
+h("japan","essen",1,"What is miso soup made from?","fermented soybean paste",["fish bones","rice flour","seaweed only"],
+ "It is served with breakfast as readily as with dinner. The dashi stock underneath it does most of the work."),
+h("japan","essen",1,"What is wasabi?","a spicy green root",["a chilli","a herb","a mustard seed"],
+ "Most of what is served is dyed horseradish. Real wasabi is grated fresh and is far milder and sweeter."),
+h("japan","essen",2,"What are onigiri?","rice balls, usually wrapped in seaweed",["fried dumplings","cold noodles","sweet buns"],
+ "Konbini ones have clever packaging that keeps the seaweed crisp until you open it. Follow the numbered steps."),
+h("japan","essen",2,"What does itadakimasu mean, said before eating?","roughly, 'I gratefully receive'",["'the food is ready'","'good evening'","'the bill, please'"],
+ "You say gochisosama deshita at the end, thanking whoever went to the trouble. Both are said even when eating alone."),
+h("japan","essen",3,"Is it rude to slurp noodles in Japan?","no, it is normal",["yes, very","only at breakfast","only in Kyoto"],
+ "It cools the noodles and is said to improve the taste. Soup is drunk straight from the bowl, too.")
+,
+/* ===== TOKYO — expansion ===== */
+h("tokyo","rekishi",1,"Which family of shoguns ruled Japan from Edo for over 250 years?","the Tokugawa",["the Fujiwara","the Taira","the Ashikaga"],
+ "Tokugawa Ieyasu won the battle of Sekigahara in 1600 and made Edo his base. The emperor stayed in Kyoto with almost no power."),
+h("tokyo","rekishi",2,"Under the shoguns, lords had to spend every second year in Edo. Why?","to stop them building up power at home",["to teach them the local dialect","to help them trade","because their castles were being rebuilt"],
+ "Their families stayed in Edo permanently, as hostages in all but name. The constant travel also drained their money."),
+h("tokyo","rekishi",2,"A huge earthquake destroyed much of Tokyo in 1923. What is it called?","the Great Kanto Earthquake",["the Edo Quake","the Meiji Shock","the Sumida Disaster"],
+ "Most of the damage came from the fires afterwards, not the shaking. It is why so little pre-war Tokyo survives."),
+h("tokyo","rekishi",2,"For most of the Edo period, Japan was largely closed to foreigners. What is that policy called?","sakoku",["bushido","shogun","bakufu"],
+ "It lasted roughly two centuries. A small Dutch trading post at Nagasaki was one of the few openings."),
+h("tokyo","rekishi",2,"Ryogoku in Tokyo is the home of which sport?","sumo",["baseball","judo","kendo"],
+ "The national stadium is there, along with many training stables. Tournaments in Tokyo run in January, May and September."),
+h("tokyo","rekishi",2,"What is kabuki?","a stylised form of theatre",["a martial art","a tea ceremony","a puppet show"],
+ "All roles are played by men. The Kabukiza theatre in Ginza sells single-act tickets, which is the sane way to try it."),
+h("tokyo","rekishi",3,"Why is Tokyo Disneyland not actually in Tokyo?","it is in Chiba prefecture, next door",["it is on an island","it is underground","it moved and kept the name"],
+ "It sits in Urayasu. The name was chosen because Tokyo is the one visitors have heard of."),
+h("tokyo","rekishi",3,"Yanaka is one of the few Tokyo districts with old wooden houses. Why did it survive?","it escaped both the 1923 earthquake fires and the wartime bombing",["it was rebuilt to look old","it was protected by law","it was a military zone"],
+ "It is a quiet neighbourhood of temples, cats and small shops. Good for an afternoon when the crowds get too much."),
+h("tokyo","tempel",1,"Which Tokyo railway line runs in a loop around the city centre?","the Yamanote line",["the Ginza line","the Chuo line","the Tokaido line"],
+ "A full circuit takes about an hour. Almost every district a visitor wants is on it, which makes it hard to get badly lost."),
+h("tokyo","tempel",1,"Harajuku is best known for what?","youth street fashion",["fish markets","temples","government buildings"],
+ "Takeshita Street is the crowded heart of it. One street over, Omotesando is all designer flagships and quiet architecture."),
+h("tokyo","tempel",1,"What is Ginza known for?","expensive shops and department stores",["electronics","fish","student bars"],
+ "On weekend afternoons the main avenue closes to cars. Department store basements, the depachika, are extraordinary food halls."),
+h("tokyo","tempel",2,"Shinjuku Gyoen is a large park. What is unusual about it?","it combines Japanese, English and French garden styles",["it is entirely underwater","it is on a roof","it has no plants"],
+ "It was an imperial garden before opening to the public. There is a small entry fee, which keeps it calmer than Yoyogi."),
+h("tokyo","tempel",2,"Golden Gai in Shinjuku is a warren of what?","tiny bars, some seating only six people",["temples","bookshops","fish stalls"],
+ "Some charge a cover and some welcome visitors more than others. It is worth a walk through even if you do not go in."),
+h("tokyo","tempel",2,"Odaiba sits on what?","reclaimed land in Tokyo Bay",["a natural island","a mountain","a river delta"],
+ "The name comes from gun batteries built to defend Edo from foreign ships. Now it is malls, museums and a view back at the city."),
+h("tokyo","tempel",2,"What is the Sumida river best known for in summer?","a huge fireworks festival",["swimming races","ice sculptures","a flower market"],
+ "The Sumidagawa fireworks in late July are one of the oldest such displays in Japan, going back to the Edo period."),
+h("tokyo","tempel",2,"Kappabashi street sells equipment for what trade?","restaurants and kitchens",["carpentry","fishing","printing"],
+ "It is where you buy the plastic food models displayed in restaurant windows. Also very good knives."),
+h("tokyo","tempel",3,"Nakamise is the shopping street leading to which temple?","Sensoji",["Meiji Jingu","Zojoji","Todai-ji"],
+ "It has sold snacks and souvenirs to pilgrims for centuries. Try the ningyo-yaki, small cakes baked in moulds."),
+h("tokyo","tempel",3,"Zojoji temple sits directly in front of which landmark?","Tokyo Tower",["Skytree","the Imperial Palace","Shibuya crossing"],
+ "The contrast of temple gate and orange steel tower is one of the most photographed views in the city."),
+h("tokyo","essen",1,"What is a bento?","a packed meal in a compartmented box",["a hot soup","a dessert","a drink"],
+ "Versions sold at stations are called ekiben, and often use local specialities. Buying one before a long train ride is half the fun."),
+h("tokyo","essen",1,"What is monjayaki, a Tokyo speciality?","a runny savoury pancake cooked on a hotplate",["a grilled fish","a cold noodle dish","a sweet bun"],
+ "Tsukishima has a whole street of monja restaurants. You cook it yourself with small metal spatulas."),
+h("tokyo","essen",2,"What is a kaiten-zushi?","a sushi restaurant with a conveyor belt",["a sushi school","a fish auction","a standing bar"],
+ "Plates are usually priced by colour. Many now have a touch screen so you can order directly and skip the belt."),
+h("tokyo","essen",2,"What is unagi?","freshwater eel, usually grilled with a sweet sauce",["squid","tuna belly","sea urchin"],
+ "It is traditionally eaten in high summer to survive the heat. Tokyo has specialist eel restaurants going back generations."),
+h("tokyo","essen",2,"What is an izakaya?","a pub that serves many small dishes",["a bakery","a tea house","a fast food chain"],
+ "You order gradually through the evening rather than all at once. A small charge for a compulsory appetiser is normal, not a scam."),
+h("tokyo","essen",3,"Tokyo holds a world record connected to restaurants. What?","more Michelin stars than any other city",["the largest restaurant","the oldest restaurant","the cheapest meals"],
+ "It has topped the list for years. That said, the best meal of your trip may well cost under a thousand yen."),
+h("tokyo","zahlen",1,"How many people pass through Shibuya crossing at peak times in one light change?","up to about three thousand",["about fifty","about three hundred","about fifty thousand"],
+ "It empties and refills every couple of minutes. From above, the rhythm is oddly calming."),
+h("tokyo","zahlen",2,"How many stations does the Yamanote loop have?","thirty",["ten","sixty","a hundred and twenty"],
+ "Trains come every few minutes, so there is no need to check a timetable. Just get on."),
+h("tokyo","zahlen",2,"When was Tokyo Skytree completed?","2012",["1985","2000","2020"],
+ "It replaced Tokyo Tower for broadcasting because the new high-rises were blocking the older signal."),
+h("tokyo","zahlen",3,"Tokyo has hosted the Summer Olympics how many times?","twice",["once","three times","never"],
+ "1964 and 2020, though the second was held in 2021 without spectators.")
+
+,
+/* ===== KYOTO — expansion ===== */
+h("kyoto","rekishi",1,"What was Kyoto called when it was founded as the capital?","Heian-kyo",["Edo","Naniwa","Yamato"],
+ "The Heian period is named after it, and is when much of what we think of as classical Japanese culture took shape."),
+h("kyoto","rekishi",2,"The Tale of Genji, often called the world's first novel, was written in Heian Kyoto. By whom?","Murasaki Shikibu",["Sei Shonagon","Basho","Hokusai"],
+ "She was a lady-in-waiting at court around the year 1000. Sei Shonagon, her contemporary and rival, wrote the Pillow Book."),
+h("kyoto","rekishi",2,"Kinkaku-ji was originally built as whose retirement villa?","a shogun's",["an emperor's",'a merchant\'s',"a monk's"],
+ "Ashikaga Yoshimitsu built it in the 1390s. It became a temple only after his death, as he had instructed."),
+h("kyoto","rekishi",2,"Which Kyoto festival, held each July, is one of Japan's most famous?","Gion Matsuri",["Sapporo Snow Festival","Awa Odori","Tanabata"],
+ "It began as a plea to stop a plague in the 800s. The great floats are pulled through the streets on the 17th and 24th."),
+h("kyoto","rekishi",2,"In August, giant characters are set alight on the hills around Kyoto. What is this called?","Gozan no Okuribi",["Hanami","Setsubun","Obon odori"],
+ "It sends the spirits of the dead back at the end of Obon. The best known is the character for 'great', dai, on Mount Nyoigatake."),
+h("kyoto","rekishi",3,"Nijo Castle was where the last shogun did what?","handed power back to the emperor",["was born","was crowned","was imprisoned"],
+ "That was 1867, ending more than 250 years of Tokugawa rule. The following year the capital moved to Tokyo."),
+h("kyoto","rekishi",3,"What is a machiya?","a traditional wooden townhouse",["a castle tower","a tea field","a shrine gate"],
+ "Narrow at the front and long at the back, they were taxed by street frontage. Many are now cafes and guesthouses."),
+h("kyoto","tempel",1,"Which Kyoto temple's name means 'pure water'?","Kiyomizu-dera",["Kinkaku-ji","Ryoan-ji","Nanzen-ji"],
+ "A waterfall at the site splits into three streams for long life, success and love. You are meant to drink from only one."),
+h("kyoto","tempel",1,"What is a torii gate for?","it marks the entrance to a sacred place",["it holds up the roof","it is a bridge","it is a bell tower"],
+ "Passing under one means you are entering the shrine grounds. The centre of the path is left for the gods, so walk slightly to the side."),
+h("kyoto","tempel",2,"Sanjusangen-do hall contains how many statues of Kannon?","1,001",["one","fifty","ten thousand"],
+ "They stand in rows in a hall over 100 metres long. No two of the faces are quite the same."),
+h("kyoto","tempel",2,"Nanzen-ji has an unexpected structure running through its grounds. What?","a brick aqueduct",["a railway","a football pitch","a lighthouse"],
+ "It was built in the 1890s to carry water from Lake Biwa. The mix of Meiji brick and temple wood is oddly beautiful."),
+h("kyoto","tempel",2,"The Philosopher's Path is a walk beside what?","a canal lined with cherry trees",["the sea","a motorway","a bamboo forest"],
+ "It is named after a philosopher who walked it daily to his university. Best in early April, or in the quiet of early morning."),
+h("kyoto","tempel",2,"To-ji temple has the tallest wooden structure of its kind in Japan. What is it?","a five-storey pagoda",["a gate","a bell tower","a bridge"],
+ "About 55 metres. It has burned down and been rebuilt several times, which is normal for wooden Japan."),
+h("kyoto","tempel",2,"Byodo-in temple, near Kyoto, appears on which Japanese coin?","the 10 yen coin",["the 1 yen coin","the 100 yen coin","the 500 yen coin"],
+ "Its Phoenix Hall is on the back. The phoenix itself appears on the 10,000 yen note."),
+h("kyoto","tempel",2,"Tofuku-ji is especially worth visiting in which season?","autumn",["winter","high summer","early spring"],
+ "The bridge over its maple valley is famous, and correspondingly packed in late November."),
+h("kyoto","tempel",2,"Yasaka shrine sits at the end of which famous Kyoto district?","Gion",["Arashiyama","Fushimi","Uji"],
+ "It is lit by lanterns at night and stays open. Maruyama park behind it is Kyoto's most popular blossom spot."),
+h("kyoto","tempel",3,"Arashiyama has a park where which animals roam?","Japanese macaques",["deer","foxes","rabbits"],
+ "It is a stiff climb up, and the view over Kyoto at the top is the real reward. You feed them from inside a hut, not the other way round."),
+h("kyoto","tempel",3,"What does the word 'zen' come from?","a word meaning meditation",["a word meaning garden","a word meaning silence","a word meaning stone"],
+ "It travelled from Sanskrit through Chinese into Japanese. The gardens are an aid to it, not the point of it."),
+h("kyoto","tempel",3,"What is an ema?","a small wooden plaque with a wish written on it",["a paper fortune","a lucky charm","an incense stick"],
+ "You hang it at the shrine. An omikuji is the paper fortune, and a bad one gets tied to a rack so it stays behind."),
+h("kyoto","essen",1,"What is yudofu, a Kyoto speciality?","tofu simmered gently in broth",["fried chicken","cold noodles","grilled eel"],
+ "It sounds plain and is not. The restaurants around Nanzen-ji have served it for centuries."),
+h("kyoto","essen",2,"What are yatsuhashi?","sweets made from rice flour and cinnamon",["pickled vegetables","fried dumplings","tea cups"],
+ "The soft, unbaked kind wrapped around red bean paste is the classic Kyoto souvenir. Every shop offers samples."),
+h("kyoto","essen",2,"Fushimi, in southern Kyoto, is famous for producing what?","sake",["beer","tea","whisky"],
+ "Its soft water is the reason. Several breweries there run small museums with tastings at the end."),
+h("kyoto","essen",2,"Kyoto pickles have a special name. What is it?","tsukemono",["tempura","tonkatsu","takoyaki"],
+ "Nishiki market is full of them. Buy a small mixed pack rather than committing to a whole daikon."),
+h("kyoto","essen",3,"What is obanzai?","everyday Kyoto home cooking",["a formal banquet","street food","a type of sake"],
+ "Small seasonal vegetable dishes, served together. Some restaurants now specialise in it, which would once have been an odd idea."),
+h("kyoto","zahlen",1,"Roughly how many people live in Kyoto?","about 1.5 million",["about 50,000","about 9 million","about 25 million"],
+ "Small enough to cross by bicycle, which is how a lot of residents get around."),
+h("kyoto","zahlen",2,"How many temples and shrines are there in Kyoto, roughly?","around 1,600 temples and 400 shrines",["about 20 in total","about 100 in total","over 50,000"],
+ "You will not see them all. Choosing three or four properly beats rushing ten."),
+h("kyoto","zahlen",3,"How tall is Kyoto Tower?","about 130 metres",["about 30 metres","about 300 metres","about 600 metres"],
+ "It was controversial when built in the 1960s, in a city of low wooden buildings. It stands right outside the station.")
+
+,
+/* ===== NARA + GENERAL JAPAN — expansion ===== */
+h("nara","tempel",2,"Kasuga Taisha shrine is famous for thousands of what?","lanterns",["torii gates","statues","bells"],
+ "Stone ones line the paths, bronze ones hang from the buildings. They are lit twice a year, in February and August."),
+h("nara","tempel",2,"Horyu-ji, near Nara, holds a world record. What?","the oldest surviving wooden buildings in the world",["the tallest pagoda","the largest bell","the oldest garden"],
+ "Parts date to the 7th century. It is a short train ride from Nara and far quieter than the park."),
+h("nara","tempel",3,"Todai-ji's hall has a pillar with a hole in it. What do people do?","climb through it",["put coins in it","tie prayers to it","ring it like a bell"],
+ "The hole is said to be the size of the Great Buddha's nostril. Children manage it easily; adults less gracefully."),
+h("nara","rekishi",2,"What is the Nara period best known for?","the arrival and spread of Buddhism as a state religion",["the rise of the samurai","the closing of Japan","the first shogun"],
+ "Todai-ji was built as the head temple of a national network. The cost nearly bankrupted the state."),
+h("nara","essen",2,"Nara is known for a distinctive way of making which food?","mochi, pounded very fast by hand",["ramen","sushi","curry"],
+ "The shop Nakatanidou draws crowds for the speed of the pounding. It is a performance as much as a bakery."),
+h("nara","zahlen",1,"Roughly how many deer live in Nara Park?","over a thousand",["about twenty","about a hundred","about fifty thousand"],
+ "They are wild animals, legally protected. They will take a paper map out of your hand and eat it."),
+h("japan","rekishi",1,"What is a ryokan?","a traditional inn",["a train","a temple","a shop"],
+ "You sleep on futon laid on tatami, and dinner is often included and elaborate. One night in one is worth rearranging a trip for."),
+h("japan","rekishi",1,"What is a yukata?","a light cotton robe",["a pair of shoes","a hat","a fan"],
+ "Ryokan provide them, and you can wear one to dinner and around the town. Left side over right — the other way is for funerals."),
+h("japan","rekishi",2,"What might stop you entering some onsen?","visible tattoos",["wearing glasses","being under 40","carrying a camera"],
+ "The association with organised crime lingers. Many places now allow small covered tattoos, and private baths solve it entirely."),
+h("japan","rekishi",2,"In a Japanese home there are separate slippers for one room. Which?","the toilet",["the kitchen","the bedroom","the hallway"],
+ "Forgetting to swap back and wandering out in toilet slippers is the classic visitor's mistake."),
+h("japan","rekishi",2,"What is an omamori?","a cloth charm bought at a shrine",["a fortune slip","a wooden plaque","an incense stick"],
+ "Each is for a specific purpose: traffic safety, study, health. You are not meant to open it."),
+h("japan","rekishi",2,"What do you do with a bad omikuji fortune?","tie it up at the shrine and leave it behind",["burn it","keep it in your wallet","throw it in the river"],
+ "Racks of white paper knots outside a shrine are all somebody's bad luck, left where it can do no harm."),
+h("japan","rekishi",2,"Why are there so few public bins in Japan?","most were removed for security reasons and never returned",["littering is legal","bins are underground","people do not eat outside"],
+ "You carry your rubbish until you find a konbini. Streets are still spotless, which takes visitors a while to process."),
+h("japan","rekishi",2,"What is a koban?","a small neighbourhood police box",["a coin","a lunchbox","a temple gate"],
+ "If you are lost, this is where you ask. Officers there are used to giving directions and often have good maps."),
+h("japan","rekishi",3,"What happens to the rear passenger door of a Japanese taxi?","the driver opens and closes it automatically",["you must open it yourself","it slides upward","it is always left open"],
+ "Do not slam it. Stand back and let it swing."),
+h("japan","rekishi",3,"What is takkyubin?","a courier service that forwards your luggage",["a night bus","a lunchbox","a type of train ticket"],
+ "Send your suitcase from one hotel to the next and travel with a day bag. It is cheap, reliable and transforms a multi-city trip."),
+h("japan","rekishi",3,"Many Japanese stations play a short melody. What does it signal?","the train is about to depart",["a station is closing","a delay","an emergency"],
+ "Each station has its own tune. Some are locally famous, and people know exactly where they are by ear."),
+h("japan","tempel",1,"What is the difference between a shrine and a temple in Japan?","shrines are Shinto, temples are Buddhist",["shrines are older","temples are outdoors only","there is no difference"],
+ "Most Japanese people use both without contradiction: a Shinto wedding, a Buddhist funeral."),
+h("japan","tempel",2,"What do you do at the front of a Shinto shrine?","bow twice, clap twice, bow once",["clap three times","kneel and pray silently","light a candle"],
+ "Throw a coin in the box first. A five yen coin is traditional, because its name sounds like the word for a good connection."),
+h("japan","tempel",2,"What are the cherry blossom and autumn leaf seasons called?","hanami and koyo",["matsuri and obon","sakura and shogun","tsuyu and taifu"],
+ "Both are tracked as fronts moving across the country, north for blossom and south for leaves."),
+h("japan","tempel",2,"What is tsuyu?","the rainy season in early summer",["a winter wind","a spring festival","a type of noodle"],
+ "It runs roughly through June. Kyoto in tsuyu is humid, green and much emptier."),
+h("japan","tempel",3,"Tatami mats are used to measure what?","the size of a room",["the height of a building","the weight of rice","the age of a house"],
+ "A room is described as six mats or eight mats. The exact size varies a little between regions."),
+h("japan","essen",1,"What is the difference between udon and soba?","udon are thick wheat noodles, soba are thin buckwheat ones",["udon are fried, soba boiled","udon are sweet","there is none"],
+ "Soba is eaten hot or cold. Cold soba with dipping sauce in summer is one of the great simple meals."),
+h("japan","essen",1,"What is tonkatsu?","a breaded, deep-fried pork cutlet",["a fish stew","a rice cake","a cold noodle"],
+ "Served with shredded cabbage and a thick brown sauce. You grind your own sesame seeds into it at the table."),
+h("japan","essen",1,"What is okonomiyaki?","a savoury pancake with cabbage and various fillings",["a sweet crepe","a soup","a rice ball"],
+ "The name roughly means 'grilled how you like it'. Osaka and Hiroshima each insist their version is correct."),
+h("japan","essen",1,"What are gyoza?","pan-fried dumplings",["rice crackers","pickles","noodles"],
+ "Crisp on the bottom, steamed on top. They arrived from China and became thoroughly Japanese."),
+h("japan","essen",2,"What is takoyaki?","batter balls with pieces of octopus",["fried chicken","sweet dumplings","grilled squid"],
+ "A street food from Osaka. They come out molten, so wait longer than you want to."),
+h("japan","essen",2,"How is sake usually made?","from fermented rice",["from grapes","from barley","from potatoes"],
+ "It can be served warm or chilled, and the good stuff is almost always chilled. In Japan the word sake often just means alcohol generally."),
+h("japan","essen",2,"What is umeshu?","a sweet liqueur made from plums",["a rice wine","a green tea","a beer"],
+ "Easy to drink and often homemade. Ask for it with soda in an izakaya."),
+h("japan","essen",2,"What is an oshibori?","a damp towel given before a meal",["a set of chopsticks","a small plate","a menu"],
+ "Hot in winter, cold in summer. It is for your hands, not your face, though plenty of people ignore that."),
+h("japan","essen",2,"What is wagyu?","a type of Japanese beef",["a fish","a vegetable","a noodle"],
+ "The marbling comes from the breed and the feeding. A small portion is the point; a large one is overwhelming."),
+h("japan","essen",3,"What is dashi?","a stock made from kelp and dried fish flakes",["a soy sauce","a rice vinegar","a chilli paste"],
+ "It is underneath almost everything savoury in Japanese cooking, which is why so much tastes subtly related."),
+h("japan","essen",3,"What is natto, famously divisive?","fermented soybeans",["raw horse meat","fish eggs","pickled plum"],
+ "Sticky, stringy and strong-smelling. Common at breakfast, and worth trying once so you can have an opinion."),
+h("japan","zahlen",1,"How many time zones does Japan have?","one",["three","five","none"],
+ "From Hokkaido to Okinawa, a single time. In summer the sun comes up in Tokyo before five in the morning."),
+h("japan","zahlen",2,"Which is the fastest category of Shinkansen on the Tokyo-Kyoto line?","Nozomi",["Kodama","Hikari","Sakura"],
+ "Nozomi stops least, Kodama stops everywhere, Hikari is in between. Check which your ticket allows."),
+h("japan","zahlen",2,"Roughly how many vending machines are there in Japan?","several million",["a few thousand","about fifty thousand","about two hundred"],
+ "You find them on empty mountain roads. Hot drinks in winter come out genuinely hot."),
+h("japan","zahlen",2,"How many syllables does a traditional haiku have?","seventeen",["twelve","twenty","thirty-one"],
+ "Five, seven, five. Basho, the most famous writer of them, walked much of northern Japan on foot."),
+h("japan","zahlen",3,"Roughly how many earthquakes are recorded in Japan each year?","over a thousand that people can feel",["about ten","about a hundred","about five"],
+ "Most are minor. Buildings are designed for it, and hotel rooms usually have instructions worth glancing at."),
+h("japan","zahlen",3,"Japan's population is currently doing what?","shrinking",["growing quickly","staying exactly level","doubling every decade"],
+ "It peaked around 2010. You will notice it most in the countryside, and not at all in Shibuya.")
+
+,
+/* ===== WORDS & PHRASES ===== */
+h("japan","kotoba",1,"Which word covers 'excuse me', 'sorry' and 'thank you' all at once?","sumimasen",["konnichiwa","kanpai","sayonara"],
+ "The single most useful word in Japan. Use it to get past someone, to apologise, and to call a waiter over."),
+h("japan","kotoba",1,"How do you say 'please' when asking for something?","onegaishimasu",["arigato","hai","dozo"],
+ "Kudasai works too and is slightly more direct. Point at the menu and add onegaishimasu and you have ordered."),
+h("japan","kotoba",1,"What does 'hai' mean?","yes",["no","maybe","goodbye"],
+ "Iie is no, but the Japanese rarely say it flatly. A drawn-out 'chotto...' usually means no."),
+h("japan","kotoba",1,"How do you say good morning?","ohayo gozaimasu",["konbanwa","oyasumi","itadakimasu"],
+ "Konnichiwa is for the middle of the day, konbanwa for the evening, oyasumi nasai on going to bed."),
+h("japan","kotoba",1,"What does 'oishii' mean?","delicious",["expensive","hot","enough"],
+ "Say it while eating and you will make somebody's day. Add totemo for 'very'."),
+h("japan","kotoba",1,"What does 'kanpai' mean?","cheers",["goodbye","welcome","sorry"],
+ "Nobody drinks before it has been said. Wait for the first one, then relax."),
+h("japan","kotoba",1,"How do you ask how much something costs?","ikura desu ka",["doko desu ka","nan desu ka","dare desu ka"],
+ "Shopkeepers will usually then type the number into a calculator and show you, which solves everything."),
+h("japan","kotoba",1,"How do you ask where something is?","doko desu ka",["ikura desu ka","itsu desu ka","naze desu ka"],
+ "Put the thing first: 'toire wa doko desu ka' — where is the toilet."),
+h("japan","kotoba",1,"What is 'eki'?","a railway station",["a shop","a temple","a street"],
+ "So Kyoto-eki is Kyoto station. You will see the word constantly on signs."),
+h("japan","kotoba",1,"What is 'mizu'?","water",["tea","rice","fish"],
+ "Water and tea arrive free at the table in most restaurants. Ocha is tea."),
+h("japan","kotoba",2,"How do you politely ask for the bill?","okaikei onegaishimasu",["itadakimasu","gochisosama","irasshaimase"],
+ "In many places you take the slip from your table to the till rather than paying where you sat."),
+h("japan","kotoba",2,"What does the shout 'irasshaimase' mean when you walk into a shop?","welcome",["we are closed","please queue","how many people"],
+ "It is not a question and needs no answer. A small nod is plenty."),
+h("japan","kotoba",2,"How do you say 'I don't understand'?","wakarimasen",["shirimasen","dekimasen","chigaimasu"],
+ "Pair it with 'nihongo ga wakarimasen' — I don't understand Japanese — and people will switch to gestures and kindness."),
+h("japan","kotoba",2,"How do you ask whether someone speaks English?","eigo ga hanasemasu ka",["nihongo desu ka","doko desu ka","ikura desu ka"],
+ "Eigo is English, nihongo is Japanese. Expect apologetic answers from people whose English is perfectly fine."),
+h("japan","kotoba",2,"What does 'daijobu' mean?","it's fine, or are you okay?",["it's expensive","it's finished","it's forbidden"],
+ "Enormously flexible. It works as a question, an answer, and a polite refusal of a plastic bag."),
+h("japan","kotoba",2,"How do you say 'this one, please' while pointing?","kore o kudasai",["sore desu ka","are wa nan desu ka","dozo"],
+ "Kore is this, sore is that near you, are is that over there. Between the three you can shop for a fortnight."),
+h("japan","kotoba",2,"What does 'chotto matte kudasai' mean?","please wait a moment",["please come in","please sit down","please repeat"],
+ "Chotto on its own means 'a little' and is also the polite way to decline something."),
+h("japan","kotoba",2,"Which word means left, and which right?","hidari is left, migi is right",["migi is left, hidari is right","both mean left","both mean straight ahead"],
+ "Massugu means straight on. That trio gets you through most directions given by a stranger."),
+h("japan","kotoba",2,"What is 'deguchi'?","exit",["entrance","platform","ticket"],
+ "Iriguchi is entrance. In a station like Shinjuku, knowing which deguchi you want matters enormously."),
+h("japan","kotoba",2,"What is 'kippu'?","a ticket",["a coin","a map","a seat"],
+ "Kippu uriba is the ticket office. IC cards have made these less necessary, but the words persist."),
+h("japan","kotoba",2,"What does 'takai' mean?","expensive, or tall",["cheap","delicious","far"],
+ "Yasui is cheap. Context decides whether a building or a price is being described."),
+h("japan","kotoba",2,"How do you say thank you more politely than 'arigato'?","arigato gozaimasu",["arigato ne","domo","sumimasen"],
+ "Domo alone is casual. Domo arigato gozaimasu is the full, warm version."),
+h("japan","kotoba",2,"What do you say before you start eating?","itadakimasu",["gochisosama","kanpai","oishii"],
+ "And gochisosama deshita afterwards. Both are said even to a konbini sandwich, alone, at a station."),
+h("japan","kotoba",2,"What does 'omakase' mean in a restaurant?","I leave it up to the chef",["I would like the menu","separate bills, please","no fish"],
+ "It is how you get the best of what came in that morning. Say what you cannot eat first."),
+h("japan","kotoba",2,"How would you order a draft beer?","nama biru onegaishimasu",["mizu kudasai","ocha desu","kanpai shimasu"],
+ "Nama means draught. 'Toriaezu nama' — a beer to start with — is close to a national catchphrase."),
+h("japan","kotoba",2,"What is a polite way to refuse something?","kekko desu",["iie da","dame","chigau"],
+ "Said with a small raised hand. Blunt refusals feel harsh, so softness is the norm."),
+h("japan","kotoba",3,"What does 'yoroshiku onegaishimasu' roughly mean?","please treat me well, said on meeting or asking a favour",["goodbye for now","I am sorry","see you tomorrow"],
+ "It has no clean English equivalent. Say it after introducing yourself and you will look like you know what you are doing."),
+h("japan","kotoba",3,"What does 'otsukaresama desu' mean?","thank you for your hard work",["good morning","see you later","well done, congratulations"],
+ "Said among colleagues at the end of a day, and to anyone who has just done something effortful."),
+h("japan","kotoba",3,"What is the difference between 'sayonara' and 'mata ne'?","sayonara is fairly final; mata ne means see you again",["they are identical","mata ne is more formal","sayonara means hello"],
+ "Japanese people say sayonara less than films suggest. Ja mata or mata ne is the everyday goodbye."),
+h("japan","kotoba",3,"Japanese has counting words that change with the object. What are they called?","counters",["particles","honorifics","verbs"],
+ "Flat things, long things and animals all count differently. For survival, hitotsu, futatsu, mittsu — one, two, three of most things — is enough."),
+h("japan","kotoba",3,"What does adding '-san' to someone's name do?","it is a polite title, like Mr or Ms",["it means 'friend'","it makes it plural","it means 'young'"],
+ "Use it with surnames, never about yourself. Children often get -chan, boys sometimes -kun."),
+h("japan","kotoba",3,"What does 'genki desu ka' mean?","how are you?",["where are you from?","how much is it?","are you finished?"],
+ "Genki means well or full of energy. Genki desu is the answer."),
+h("japan","kotoba",3,"You want to say you are vegetarian. Which is closest?","bejitarian desu",["yasai desu","niku desu","sakana desu"],
+ "Be warned: dashi made from fish is in nearly everything. 'Katsuo dashi nashi de' — without bonito stock — is the useful follow-up."),
+h("japan","kotoba",3,"What does 'nihon' mean literally?","origin of the sun",["land of mountains","eastern sea","great harmony"],
+ "Hence 'land of the rising sun'. It is written with the characters for sun and origin.")
+
+
+];
+
+/* ---------- helpers ---------- */
+function key(q){var t=q.frage,n=0,i;for(i=0;i<t.length;i++){n=((n<<5)-n+t.charCodeAt(i))|0;}return "q"+n;}
+function shuffle(a){var t=a.slice(),i,j,x;for(i=t.length-1;i>0;i--){j=Math.floor(Math.random()*(i+1));x=t[i];t[i]=t[j];t[j]=x;}return t;}
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e;}
+var app=document.getElementById("app"), tally=document.getElementById("tally");
+function clear(){while(app.firstChild)app.removeChild(app.firstChild);}
+function refreshTally(){
+  tally.textContent = stats.rounds ? ("rounds "+stats.rounds+" · best "+stats.best+"/"+ROUND) : "";
+}
+
+var ROUND=10;
+var state={ort:null,level:null,queue:[],idx:0,score:0};
+
+/* ---------- screens ---------- */
+function screenStart(){
+  clear();
+  var h1=el("h1","","Tokyo & Kyoto");
+  var sub=el("p","sub","A quiz to get ready for the trip. Pick where you want to be asked about.");
+  app.appendChild(h1);app.appendChild(sub);
+
+  app.appendChild(el("p","label","Where"));
+  var grid=el("div","grid");
+  ORTE.forEach(function(o){
+    var n=QS.filter(function(q){return q.ort===o.id;}).length;
+    var b=el("button","opt");
+    b.type="button";
+    var t=el("b",null,o.name);
+    var jp=el("span","jp",o.jp);
+    var s=el("small",null,o.unter+" · "+n+" questions");
+    b.appendChild(t);b.appendChild(jp);b.appendChild(s);
+    b.addEventListener("click",function(){state.ort=o.id;screenLevel();});
+    grid.appendChild(b);
+  });
+  var all=el("button","opt");all.type="button";
+  all.appendChild(el("b",null,"Everything"));
+  all.appendChild(el("small",null,"All places mixed together · "+QS.length+" questions"));
+  all.addEventListener("click",function(){state.ort="all";screenLevel();});
+  grid.appendChild(all);
+  app.appendChild(grid);
+  refreshTally();
+}
+
+function screenLevel(){
+  clear();
+  var name = state.ort==="all" ? "Everything" : ORTE.filter(function(o){return o.id===state.ort;})[0].name;
+  app.appendChild(el("h1","",name));
+  app.appendChild(el("p","sub","How hard should it be?"));
+  app.appendChild(el("p","label","Level"));
+
+  var levels=[{v:1,n:"Easy",d:"The things everyone should know"},
+              {v:2,n:"Medium",d:"A bit more detail"},
+              {v:3,n:"Hard",d:"For the show-offs"},
+              {v:0,n:"Mixed",d:"All three together"}];
+  var grid=el("div","grid");
+  levels.forEach(function(L){
+    var b=el("button","opt");b.type="button";
+    b.appendChild(el("b",null,L.n));
+    b.appendChild(el("small",null,L.d));
+    b.addEventListener("click",function(){state.level=L.v;startRound();});
+    grid.appendChild(b);
+  });
+  app.appendChild(grid);
+
+  var back=el("button","ghost","← Back");back.type="button";
+  back.addEventListener("click",screenStart);
+  app.appendChild(back);
+
+  var reset=el("button","ghost","Reset which questions I have seen");reset.type="button";
+  reset.addEventListener("click",function(){stats.seen={};stats.wrong={};stats.right={};save(stats);reset.textContent="Done — everything is new again";});
+  app.appendChild(reset);
+}
+
+function startRound(){
+  var pool=QS.filter(function(q){
+    var okOrt = state.ort==="all" || q.ort===state.ort;
+    var okLvl = state.level===0 || q.stufe===state.level;
+    return okOrt && okLvl;
+  });
+  if(pool.length<4){
+    pool=QS.filter(function(q){return state.ort==="all"||q.ort===state.ort;});
+  }
+  /* Choose what to ask next.
+     Lower score = asked sooner.
+       - questions seen often sink down the list
+       - phrases sink three times more slowly, so they come round again
+       - anything answered wrong is pulled back up
+       - phrases answered right several times drift away again  */
+  if(!stats.seen)stats.seen={};
+  if(!stats.wrong)stats.wrong={};
+  if(!stats.right)stats.right={};
+  function score(q){
+    var k=key(q), drill = q.kat==="kotoba" ? 0.34 : 1;
+    return (stats.seen[k]||0)*drill - (stats.wrong[k]||0)*2 + (stats.right[k]||0)*0.5;
+  }
+  var mixed=shuffle(pool);
+  mixed.sort(function(a,b){return score(a)-score(b);});
+  state.queue=shuffle(mixed.slice(0,Math.min(ROUND,mixed.length)));
+  state.queue.forEach(function(q){var k=key(q);stats.seen[k]=(stats.seen[k]||0)+1;});
+  save(stats);
+  state.idx=0;state.score=0;
+  screenQuestion();
+}
+
+function screenQuestion(){
+  clear();
+  var q=state.queue[state.idx];
+
+  var bar=el("div","bar");var fill=el("i");
+  fill.style.width=((state.idx)/state.queue.length*100)+"%";
+  bar.appendChild(fill);app.appendChild(bar);
+
+  var meta=el("div","meta");
+  meta.appendChild(el("span",null,(state.idx+1)+" / "+state.queue.length));
+  meta.appendChild(el("span",null,state.score+" correct"));
+  app.appendChild(meta);
+
+  app.appendChild(el("p","kat",KATS[q.kat].name));
+  app.appendChild(el("p","q",q.frage));
+
+  var opts=shuffle([q.richtig].concat(q.falsch));
+  var grid=el("div","grid");
+  var buttons=[];
+  opts.forEach(function(o){
+    var b=el("button","ans",o);b.type="button";
+    b.addEventListener("click",function(){answer(b,o,q,buttons);});
+    buttons.push(b);grid.appendChild(b);
+  });
+  app.appendChild(grid);
+  app.scrollIntoView?window.scrollTo(0,0):null;
+}
+
+function answer(btn,chosen,q,buttons){
+  var right = chosen===q.richtig;
+  if(right)state.score++;
+  var qk=key(q);
+  if(!stats.wrong)stats.wrong={};
+  if(!stats.right)stats.right={};
+  if(right){stats.right[qk]=(stats.right[qk]||0)+1;}
+  else{stats.wrong[qk]=(stats.wrong[qk]||0)+1;}
+  save(stats);
+  buttons.forEach(function(b){
+    b.disabled=true;
+    if(b.textContent===q.richtig)b.className="ans right";
+    else if(b===btn)b.className="ans wrong";
+  });
+
+  var aside=el("div","aside");
+  aside.appendChild(el("b",null,right?"Correct":"Not quite"));
+  aside.appendChild(document.createTextNode(q.uebrigens));
+  app.appendChild(aside);
+
+  var next=el("button","go", state.idx+1<state.queue.length ? "Next question" : "See the result");
+  next.type="button";
+  next.addEventListener("click",function(){
+    state.idx++;
+    if(state.idx<state.queue.length)screenQuestion();else screenResult();
+  });
+  app.appendChild(next);
+  next.scrollIntoView({block:"nearest"});
+}
+
+function screenResult(){
+  clear();
+  var n=state.queue.length, s=state.score;
+  stats.rounds++;
+  if(s>stats.best)stats.best=s;
+  save(stats);
+
+  var pct=s/n;
+  var verdict = pct===1 ? "Perfect. You are ready."
+              : pct>=.8 ? "Very good — you will not be lost."
+              : pct>=.5 ? "A decent start. Go round again."
+              : "Plenty left to discover. That is the point of going.";
+
+  app.appendChild(el("p","label","Result"));
+  app.appendChild(el("p","score",s+" / "+n));
+  app.appendChild(el("p","verdict",verdict));
+
+  var again=el("button","go","Another round");again.type="button";
+  again.addEventListener("click",startRound);
+  app.appendChild(again);
+
+  var back=el("button","ghost","Choose somewhere else");back.type="button";
+  back.addEventListener("click",screenStart);
+  app.appendChild(back);
+
+  refreshTally();
+  window.scrollTo(0,0);
+}
+
+screenStart();
+})();
+</script>
+</body>
+</html>
